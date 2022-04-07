@@ -1,0 +1,3 @@
+Add a manifest to an existing executable from the command line with mt.exe -manifest <MANIFEST> -outputresource:<EXE>;#1
+
+https://docs.microsoft.com/en-us/windows/apps/design/globalizing/use-utf8-code-page#code-try-1

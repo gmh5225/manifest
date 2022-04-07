@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?> 
+<!-- August 2021. Elad Karako. --> 
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0"> 
+<!-- a segment for identity, optional (you don't need it, unless you know you need it). processorArchitecture: */x86/amd64 (not x64!) --> 
+<!-- 
+  <assemblyIdentity 
+      name="Microsoft.Windows.Shell.calc" 
+      processorArchitecture="*" 
+      version="5.1.0.0" 
+      type="win32" /> 
+  <description>Windows Calc</description> 
+--> 
+<!-- apply the current Windows-theme to the controls of the application (when possible). not needed for dll or console app. --> 
+  <dependency> 
+    <dependentAssembly> 
+      <assemblyIdentity name="Microsoft.Windows.Common-Controls" 
+        version="6.0.0.0" publicKeyToken="6595b64144ccf1df" 
+        type="win32" processorArchitecture="*" language="*" /> 
+    </dependentAssembly> 
+  </dependency> 
+  <application xmlns="urn:schemas-microsoft-com:asm.v3"> 
+     <windowsSettings>  <dpiAware                           xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true/PM</dpiAware>                        </windowsSettings>     <!-- https://docs.microsoft.com/en-us/windows/win32/sbscs/application-manifests#dpiaware --> 
+<!-- <windowsSettings>  <printerDriverIsolation             xmlns="http://schemas.microsoft.com/SMI/2011/WindowsSettings">true</printerDriverIsolation>             </windowsSettings> --> <!-- for apps that initiate printing (such as Chrome, MS-word, Paint.Net), calls printer driver from within a sandbox so if it crashes it does not really effects the app itself or the OS, not really needed. unspecified value tend to work fine in either classic or shared manner (shared is default win W7+).  https://docs.microsoft.com/en-us/windows/win32/sbscs/application-manifests#printerdriverisolation --> 
+<!-- <windowsSettings>  <highResolutionScrollingAware       xmlns="http://schemas.microsoft.com/SMI/2011/WindowsSettings">true</highResolutionScrollingAware>       </windowsSettings> --> <!-- ** DO NOT USE!!!!!! **  crashes apps in W10! should increase resolution in mouses that supports high DPI (1200 and such) but even putting it in the manifest - regardless of value WILL CRASH THE APP in W10+!!!  manually look in entries in: https://docs.microsoft.com/en-us/windows/win32/sbscs/manifest-file-schema#code-try-0 --> 
+<!-- <windowsSettings>  <ultraHighResolutionScrollingAware  xmlns="http://schemas.microsoft.com/SMI/2011/WindowsSettings">true</ultraHighResolutionScrollingAware>  </windowsSettings> --> <!-- ** DO NOT USE!!!!!! **  crashes apps in W10! should increase resolution in mouses that supports (very) high DPI (1200 and such) but even putting it in the manifest - regardless of value WILL CRASH THE APP in W10+!!!  manually look in entries in: https://docs.microsoft.com/en-us/windows/win32/sbscs/manifest-file-schema#code-try-0 --> 
+     <windowsSettings>  <dpiAwareness                       xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">PerMonitorV2,PerMonitor</dpiAwareness>    </windowsSettings>     <!-- improve 'dpiAware', can specify both. should help scale up legacy apps. https://docs.microsoft.com/en-us/windows/win32/sbscs/application-manifests#dpiawareness --> 
+     <windowsSettings>  <longPathAware                      xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">true</longPathAware>                      </windowsSettings>     <!-- windows 10 only, override MAX_PATH (260) character limit in various windows APIs to allow 32k characters, paths are getting weird, although it is handled by the windows API so legacy apps should be fine too.   also requires registry editing since this feature is disabled in the OS by default. not a good idea to turn this ON since you might take files in sd-card or portable HD elsewhere and won't be able to copy or read stuff.   https://docs.microsoft.com/en-gb/windows/win32/fileio/maximum-file-path-limitation?tabs=cmd#enable-long-paths-in-windows-10-version-1607-and-later  --> 
+<!-- <windowsSettings>  <gdiScaling                         xmlns="http://schemas.microsoft.com/SMI/2017/WindowsSettings">true</gdiScaling>                         </windowsSettings> --> <!-- makes graphic programs such as ones that takes screenshots have bad functionality with larger-DPI (ease of access), since it also enlarges the controls in sub containers, and somtimes breaks the UI, for non-graphic-programs it might improve scale text and standard controls in apps, prevents blur. useful if you are using non 100% DPI for example in 'ease-of-access'. https://docs.microsoft.com/en-us/windows/win32/sbscs/application-manifests#gdiscaling --> 
+<!-- <windowsSettings>  <activeCodePage                     xmlns="http://schemas.microsoft.com/SMI/2019/WindowsSettings">UTF-8</activeCodePage>                    </windowsSettings> --> <!-- changes a legacy program from default Windows code page 1252 to UTF-8, might mess-up display.     https://docs.microsoft.com/en-us/windows/win32/sbscs/application-manifests#activecodepage   https://docs.microsoft.com/en-us/windows/apps/design/globalizing/use-utf8-code-page#code-try-1   --> 
+     <windowsSettings>  <heapType                           xmlns="http://schemas.microsoft.com/SMI/2020/WindowsSettings">SegmentHeap</heapType>                    </windowsSettings>     <!-- change windows heap API to use a modern implementation, windows 10+ only.                         https://docs.microsoft.com/en-us/windows/win32/sbscs/application-manifests#heaptype                                                                                                          --> 
+  </application> 
+  <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3"> 
+    <security> 
+      <requestedPrivileges> 
+        <requestedExecutionLevel level="asInvoker"            uiAccess="false" /> 
+   <!-- <requestedExecutionLevel level="highestAvailable"     uiAccess="false" /> --> <!-- best to avoid! use either 'asInvoker' or 'requireAdministrator'.  if you want to use this one - essentially the cases are bi-functional application, use if program can manage most of its functionality (such read only protected files/registry) but can work in write mode when user has admin right, dialog for admin details will be shown on demans, and if not providing admin-auth the specific action fails but the app can still run. --> 
+   <!-- <requestedExecutionLevel level="requireAdministrator" uiAccess="false" /> --> <!-- use if program requires admin-access. standard user gets credentials dialog for admin-account-details. won't start the app without some admin-auth-details. --> 
+      </requestedPrivileges> 
+    </security> 
+  </trustInfo> 
+  <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1"> <!-- without it, apps will run in windows vista compatibility in windows 7.   https://docs.microsoft.com/en-us/windows/win32/sbscs/application-manifests#compatibility --> 
+    <application> 
+      <supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}" /> <!-- Windows 10/11  /  Windows Server 2016/2019  --> 
+      <supportedOS Id="{1f676c76-80e1-4239-95bb-83d0f6d0da78}" /> <!-- Windows 8.1    /  Windows Server 2012 R2    --> 
+      <supportedOS Id="{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}" /> <!-- Windows 8      /  Windows Server 2012       --> 
+      <supportedOS Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}" /> <!-- Windows 7      /  Windows Server 2008 R2    --> 
+      <supportedOS Id="{e2011457-1546-43c5-a5fe-008deee3d3f0}" /> <!-- Windows Vista  /  Windows Server 2008       --> 
+    </application> 
+  </compatibility> 
+</assembly> 
+ 

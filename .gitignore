@@ -1,0 +1,15 @@
+bin/ResourceHacker/ResourceHacker.ini
+
+resourcehacker.log
+
+manifests.rc
+
+MANIFEST*.txt
+
+
+
+tracetest.log
+
+tracetest.txt
+
+*.lnk
